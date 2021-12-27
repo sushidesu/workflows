@@ -1,19 +1,66 @@
-name: Reusable workflow example
+# ref: https://zenn.dev/ryo_kawamata/articles/improve-dependabot-pr
+name: Compare static assets
 
 on:
   workflow_call:
     inputs:
-      username:
+      build_command:
         required: true
         type: string
     secrets:
-      token:
+      github_token:
         required: true
 
 jobs:
-  example_job:
-    name: Pass input and secrets to my-action
+  compare-static-assets-job:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
-      - run: echo hello ${{ inputs.username }}
-        shell: bash
+      # 前処理
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "lts/*"
+      # プルリクエストのブランチでビルド
+      - name: Checkout current branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install dependencies
+        run: yarn
+      - name: Build on current branch
+        run: export OUT_DIR=/tmp/current; ${{ inputs.build_command }}
+      # mainブランチでビルド
+      - name: Checkout main branch
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+      - name: Reinstall dependencies
+        run: yarn
+      - name: Build on main branch
+        run: export OUT_DIR=/tmp/main; ${{ inputs.build_command }}
+      # 静的アセットの比較
+      - name: Compare static assets
+        run: git diff --compact-summary /tmp/current /tmp/main > /tmp/result.txt || true
+      # 結果をPRにコメント
+      - name: Comment to PR
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.github_token }}
+          script: |
+            const fs = require('fs')
+            const result = fs.readFileSync('/tmp/result.txt', 'utf8')
+            const commentBody = result ? `静的アセットのビルド結果に差分があります👀
+            <details><summary>詳細</summary>
+            \`\`\`
+            ${result}
+            \`\`\`
+            </details>`
+            : '静的アセットのビルド結果に差分はありません🎉'
+            console.log({ commentBody })
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            })
