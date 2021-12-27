@@ -21,6 +21,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: "lts/*"
+          cache: true
       # プルリクエストのブランチでビルド
       - name: Checkout current branch
         uses: actions/checkout@v2
