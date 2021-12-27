@@ -9,6 +9,6 @@ jobs:
   call-workflow-passing-data:
     uses: sushidesu/workflows/.github/workflows/compare-static-assets.yml@main
     with:
-      username: mona
+      build_command: yarn build:base
     secrets:
-      token: ${{ secrets.TOKEN }}
+      github_token: ${{ secrets.GITHUB_TOKEN }}
