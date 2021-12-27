@@ -52,6 +52,7 @@ jobs:
 
             \`\`\`diff
             ${result}\`\`\`
+            </details>`
             : '静的アセットのビルド結果に差分はありません🎉'
             console.log({ commentBody })
             await github.rest.issues.createComment({
