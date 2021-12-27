@@ -6,7 +6,8 @@
   "author": "sushidesu <hugemerge@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "build": "esbuild src/main.ts --outfile=dist/main.js --bundle"
+    "build": "export OUT_DIR=dist; yarn build:base",
+    "build:base": "esbuild src/main.ts --outfile=$OUT_DIR/main.js --bundle"
   },
   "devDependencies": {
     "esbuild": "^0.14.8"
