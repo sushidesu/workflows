@@ -1,5 +1,5 @@
 function main() {
-  console.log("hello4")
+  console.log("hello5")
 }
 
 main()
