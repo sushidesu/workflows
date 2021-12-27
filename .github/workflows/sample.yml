@@ -10,5 +10,3 @@ jobs:
     uses: sushidesu/workflows/.github/workflows/compare-static-assets.yml@main
     with:
       build_command: yarn build:base
-    secrets:
-      github_token: ${{ secrets.GITHUB_TOKEN }}
