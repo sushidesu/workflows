@@ -7,7 +7,7 @@ on:
 
 jobs:
   call-workflow-passing-data:
-    uses: sushidesu/compare-static-assets/.github/workflows/compare-static-assets.yml@main
+    uses: sushidesu/workflows/.github/workflows/compare-static-assets.yml@main
     with:
       username: mona
     secrets:
