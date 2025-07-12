@@ -7,6 +7,10 @@ on:
       build_command:
         required: true
         type: string
+      node_version:
+        required: false
+        type: string
+        default: "20"
 
 jobs:
   compare-static-assets-job:
@@ -17,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version-file: '.node-version'
+          node-version: ${{ inputs.node_version }}
       # プルリクエストのブランチでビルド
       - name: Checkout current branch
         uses: actions/checkout@v2
